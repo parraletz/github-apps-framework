@@ -1,0 +1,27 @@
+{
+  "name": "github-apps-framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "swc src -d dist",
+    "start": "pnpm build && node dist/app.js",
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.2",
+  "dependencies": {
+    "@octokit/rest": "^22.0.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.7.7",
+    "@swc/core": "^1.12.5",
+    "@types/node": "^24.0.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "vitest-tsconfig-paths": "^3.4.1"
+  }
+}

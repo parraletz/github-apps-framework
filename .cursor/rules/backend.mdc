@@ -1,0 +1,156 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+name: github-app-ts-rules
+description: Ruleset for building GitHub Apps using TypeScript, pnpm, Octokit, SWC, and Vitest. Express is not used. OOP and clean architecture enforced.
+version: 1.3
+
+rules:
+
+- id: use-pnpm
+  description: Always use pnpm for package management. Never use npm or yarn.
+  match: shell
+  enforce: true
+  replace: pnpm
+  example:
+  before: npm install @octokit/rest
+  after: pnpm add @octokit/rest
+
+- id: use-typescript
+  description: The codebase must be written in TypeScript.
+  match: language
+  enforce: true
+  language: typescript
+
+- id: tsconfig-standard
+  description: Use the following tsconfig.json configuration.
+  enforce: true
+  example:
+  after: |
+  {
+  "compilerOptions": {
+  "module": "commonjs",
+  "esModuleInterop": true,
+  "target": "es2022",
+  "noImplicitAny": true,
+  "moduleResolution": "node",
+  "sourceMap": true,
+  "outDir": "dist",
+  "baseUrl": ".",
+  "skipLibCheck": true,
+  "paths": {
+  "_": ["types/_"]
+  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+  }
+
+- id: support-path-alias
+  description: Use aliasing with `baseUrl` and `paths` in tsconfig.json.
+  enforce: true
+  example:
+  after: |
+  import { GitHubService } from "@/services/github";
+
+- id: use-swc
+  description: Use SWC for compiling TypeScript, not tsc.
+  enforce: true
+  example:
+  after: |
+  {
+  "jsc": {
+  "target": "es2022",
+  "parser": {
+  "syntax": "typescript",
+  "tsx": false,
+  "decorators": true
+  },
+  "transform": {
+  "decoratorMetadata": true
+  }
+  },
+  "module": {
+  "type": "commonjs"
+  }
+  }
+
+- id: use-octokit
+  description: Use @octokit/rest for GitHub API interactions.
+  enforce: true
+  example:
+  after: |
+  import { Octokit } from "@octokit/rest";
+  const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+- id: no-express
+  description: Do not use Express. Use native GitHub App event handling.
+  enforce: true
+  note: The app should handle webhooks using @octokit/webhooks or similar tools, without Express or any HTTP server abstraction unless strictly necessary.
+
+- id: github-app-architecture
+  description: Build GitHub Apps that handle events via webhooks, authenticate properly, and follow GitHub App best practices.
+  enforce: true
+  example:
+  after: |
+  import { Webhooks } from "@octokit/webhooks";
+
+      const webhooks = new Webhooks({ secret: process.env.WEBHOOK_SECRET! });
+      webhooks.on("issues.opened", async ({ payload }) => {
+        console.log("Issue created:", payload.issue.title);
+      });
+
+- id: oop-style
+  description: Use Object-Oriented Programming with services, handlers, and helpers as classes.
+  enforce: true
+  example:
+  after: |
+  class IssueHandler {
+  constructor(private octokit: Octokit) {}
+
+        async handleOpened(payload: any) {
+          const issue = payload.issue;
+          console.log("New issue:", issue.title);
+        }
+      }
+
+- id: vitest-testing
+  description: All tests must use Vitest.
+  enforce: true
+  example:
+  after: |
+  import { describe, it, expect } from 'vitest';
+
+      describe('IssueHandler', () => {
+        it('should process new issues', async () => {
+          // test logic here
+        });
+      });
+
+- id: senior-mindset
+  description: All code must reflect the mindset of a Senior Backend Engineer. Clear separation of concerns, reusable components, and well-documented logic.
+  enforce: true
+
+- id: folder-structure
+  description: Use a clean, modular folder structure.
+  enforce: true
+  example:
+  after: |
+  src/
+  app.ts
+  config/
+  github.ts
+  services/
+  GitHubService.ts
+  handlers/
+  IssueHandler.ts
+  events/
+  webhookRouter.ts
+  utils/
+  logger.ts
+  tests/
+  services/
+  handlers/
